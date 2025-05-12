@@ -9,8 +9,16 @@ export default function Home() {
   const sendMessage = async () => {
     setLoading(true);
     try {
-      const res = await axios.post('/api/aura', { message });
-      setResponse(res.data.reply);
+    const res = await fetch('/api/aura', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ message })
+});
+
+const data = await res.json();
+setResponse(data.reply || data.error || 'Unknown error');
     } catch (err) {
       setResponse('Error: ' + err.message);
     } finally {
