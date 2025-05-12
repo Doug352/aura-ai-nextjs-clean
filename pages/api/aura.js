@@ -1,16 +1,13 @@
-import { Configuration, OpenAIApi } from "openai";
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-const openai = new OpenAIApi(configuration);
-
 export default async function handler(req, res) {
+  console.log("[AURA] Incoming method:", req.method);
+
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Only POST method is supported" });
+    return res.status(405).json({ error: "Only POST requests allowed" });
   }
 
+  try {
+    const { message } = req.body;
+    console.log("[AURA] Message received:", message);
   const { message } = req.body;
 
   if (!message || message.trim() === "") {
@@ -42,7 +39,8 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({ reply: reply.trim() });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to get response from AURA" });
+    } catch (error) {
+    console.error("[AURA ERROR]", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
-}// force rebuild
+
